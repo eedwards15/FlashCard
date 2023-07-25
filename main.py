@@ -1,20 +1,14 @@
 import json
-import random
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from FlashcardManager import FlashcardManager
 
-def load_flashcards(filename):
-    with open(filename, 'r') as file:
-        flashcards_data = json.load(file)
-    return flashcards_data['flashcards']
-
-def show_flashcard(index):
-    global flashcards, question_label, answer_label
-    if not flashcards:
+def show_flashcard():
+    card = flashcard_manager.get_current_flashcard()
+    if not card:
         messagebox.showinfo("Flashcard Studying Tool", "No flashcards loaded. Please load a JSON file.")
         return
 
-    card = flashcards[index]
     question = card['question']
     answer = card['answer']
 
@@ -27,35 +21,28 @@ def show_flashcard(index):
     reveal_button.config(command=reveal_answer)
 
 def open_file():
-    global flashcards, current_index
     file_path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
     if file_path:
         try:
-            flashcards = load_flashcards(file_path)
-            current_index = 0
-            show_flashcard(current_index)
+            flashcard_manager.load_flashcards(file_path)
+            show_flashcard()
         except FileNotFoundError:
             messagebox.showinfo("Flashcard Studying Tool", "Flashcards file not found. Please select a valid 'json' file.")
         except json.JSONDecodeError:
             messagebox.showinfo("Flashcard Studying Tool", "Invalid JSON format. Please select a valid 'json' file.")
 
 def next_flashcard():
-    global current_index
-    if flashcards and current_index < len(flashcards) - 1:
-        current_index += 1
-        show_flashcard(current_index)
+    if flashcard_manager.move_to_next_flashcard():
+        show_flashcard()
 
 def previous_flashcard():
-    global current_index
-    if flashcards and current_index > 0:
-        current_index -= 1
-        show_flashcard(current_index)
+    if flashcard_manager.move_to_previous_flashcard():
+        show_flashcard()
 
 def main():
-    global flashcards, question_label, answer_label, reveal_button, current_index
+    global question_label, answer_label, reveal_button, flashcard_manager
 
-    flashcards = []
-    current_index = 0
+    flashcard_manager = FlashcardManager()
 
     root = tk.Tk()
     root.title("Flashcard Studying Tool")
