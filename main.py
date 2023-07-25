@@ -60,10 +60,16 @@ def main():
     root = tk.Tk()
     root.title("Flashcard Studying Tool")
 
-    select_file_button = tk.Button(root, text="Select JSON File", command=open_file)
-    select_file_button.pack(pady=20)
+    menu_bar = tk.Menu(root)
+    root.config(menu=menu_bar)
 
-    question_label = tk.Label(root, text="Press 'Select JSON File' to load flashcards.")
+    file_menu = tk.Menu(menu_bar, tearoff=0)
+    menu_bar.add_cascade(label="File", menu=file_menu)
+    file_menu.add_command(label="Open JSON File", command=open_file)
+    file_menu.add_separator()
+    file_menu.add_command(label="Exit", command=root.destroy)
+
+    question_label = tk.Label(root, text="Press 'File' -> 'Open JSON File' to load flashcards.")
     question_label.pack(pady=20)
 
     answer_label = tk.Label(root, text="")
@@ -78,9 +84,6 @@ def main():
     next_button = tk.Button(root, text="Next", command=next_flashcard)
     next_button.pack(side=tk.RIGHT, padx=10)
     
-    exit_button = tk.Button(root, text="Exit", command=root.destroy)
-    exit_button.pack(pady=10)
-
     root.mainloop()
 
 if __name__ == "__main__":
